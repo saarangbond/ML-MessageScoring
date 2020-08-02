@@ -7,8 +7,7 @@ ps = PorterStemmer()
 class PrepTestingData:
     
     def __init__(self, testFile):
-        testFile = '\\' + testFile
-        self.testing_data = pd.read_excel(r'C:\Users\Saarang\Documents\NewristicsScoringModel' + testFile)
+        self.testing_data = pd.read_excel(testFile)
         print('TESTING DATA LOADED')
 
     def dropOrig(self):

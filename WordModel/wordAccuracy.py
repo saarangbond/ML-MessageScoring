@@ -13,20 +13,20 @@ lemmatizer = WordNetLemmatizer()
 class WordAccuracyTesting:
 
     def __init__(self):
-        self.lowSampleSizeHeuristics = []
+        self.lowSampleSizeSentiments = []
 
-    def predict(self, heuristics, heuristic, message, correctScore):
-        if heuristic in heuristics:
-            heuDict = heuristics[heuristic]
-        elif heuristic not in heuristics:
-            if heuristic not in self.lowSampleSizeHeuristics:
-                self.lowSampleSizeHeuristics.append(heuristic)
+    def predict(self, sentiments, sentiment, message, correctScore):
+        if sentiment in sentiments:
+            sentDict = sentiments[sentiment]
+        elif sentiment not in sentiments:
+            if sentiment not in self.lowSampleSizeSentiments:
+                self.lowSampleSizeSentiments.append(sentiment)
             return [False, 0]
         words = word_tokenize(message)
         root_words = []
         for w in words:
             root_words.append(lemmatizer.lemmatize(w))
-        c = Counter(heuDict)
+        c = Counter(sentDict)
         common = c.most_common(5)
         present = [False,False,False,False,False]
         lim = 0
@@ -58,21 +58,21 @@ class WordAccuracyTesting:
         else:
             return [False, answer]
 
-    def runAccuracyTest(self, heuristics, heuristic, message, correctScore):
-        noHeuristic = False
+    def runAccuracyTest(self, sentiments, sentiment, message, correctScore):
+        noSentiment = False
         noScore = False
-        if not heuristic in heuristics:
-            noHeuristic = True
+        if not sentiment in sentiments:
+            noSentiment = True
         elif np.isnan(correctScore):
             noScore = True
-        predict = self.predict(heuristics, heuristic, message, correctScore)
-        result = [predict[0], predict[1], noHeuristic, noScore]
+        predict = self.predict(sentiments, sentiment, message, correctScore)
+        result = [predict[0], predict[1], noSentiment, noScore]
         #print(result)
-        self.updateHeuristicWords(heuristic, heuristics, message)
+        self.updateSentimentWords(sentiment, sentiments, message)
         return result
 
-    def updateHeuristicWords(self, heuristic, heuristics, message):
-        if heuristic in heuristics:
+    def updateSentimentWords(self, sentiment, sentiments, message):
+        if sentiment in sentiments:
             initial_stopwords = set(stopwords.words('English'))
             stop_words = []
             for w in initial_stopwords:
@@ -83,16 +83,16 @@ class WordAccuracyTesting:
                 root = lemmatizer.lemmatize(str(tok))
                 root = root.lower()
                 if not root in stop_words and not root in custom_sw:
-                    if not root in heuristics[heuristic]:
-                        (heuristics[heuristic])[root] = 1
+                    if not root in sentiments[sentiment]:
+                        (sentiments[sentiment])[root] = 1
                     else:
-                        (heuristics[heuristic])[root] += 1
-        elif heuristic not in heuristics:
-            self.addHeuristic(heuristic, heuristics, message)
+                        (sentiments[sentiment])[root] += 1
+        elif sentiment not in sentiments:
+            self.addSentiment(sentiment, sentiments, message)
     
-    def addHeuristic(self, heuristic, heuristics, message):
-        if heuristic not in heuristics:
-            heuristics[heuristic] = {}
+    def addSentiment(self, sentiment, sentiments, message):
+        if sentiment not in sentiments:
+            sentiments[sentiment] = {}
             initial_stopwords = set(stopwords.words('English'))
             stop_words = []
             for w in initial_stopwords:
@@ -102,8 +102,8 @@ class WordAccuracyTesting:
             for tok in message_tokens:
                 root = lemmatizer.lemmatize(str(tok))
                 if not root in stop_words and not root in custom_sw:
-                    if not root in heuristics[heuristic]:
-                        (heuristics[heuristic])[root] = 1
+                    if not root in sentiments[sentiment]:
+                        (sentiments[sentiment])[root] = 1
                     else:
-                        (heuristics[heuristic])[root] += 1
+                        (sentiments[sentiment])[root] += 1
     

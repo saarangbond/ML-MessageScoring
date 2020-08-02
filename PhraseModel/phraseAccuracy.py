@@ -17,18 +17,17 @@ lemmatizer = WordNetLemmatizer()
 class PhraseAccuracyTesting:
 
     def __init__(self):
-        self.lowSampleSizeHeuristics = []
+        self.lowSampleSizeSentiments = []
 
-    def predict(self, heuristicPhrases, heuristic, message, correctScore):
-        if heuristic in heuristicPhrases:
-            heuDict = heuristicPhrases[heuristic]
-        elif heuristic not in heuristicPhrases:
-            if heuristic not in self.lowSampleSizeHeuristics:
-                self.lowSampleSizeHeuristics.append(heuristic)
+    def predict(self, sentimentPhrases, sentiment, message, correctScore):
+        if sentiment in sentimentPhrases:
+            sentDict = sentimentPhrases[sentiment]
+        elif sentiment not in sentimentPhrases:
+            if sentiment not in self.lowSampleSizeSentiments:
+                self.lowSampleSizeSentiments.append(sentiment)
             return [False,0]
-        c = Counter(heuDict)
+        c = Counter(sentDict)
         phrases = c.most_common(5)
-        print(phrases)
         #print(phrases)
         
         present = [False,False,False,False,False]
@@ -57,35 +56,35 @@ class PhraseAccuracyTesting:
         else:
             return [False, answer]
 
-    def runAccuracyTest(self, heuristicPhrases, heuristic, message, correctScore):
-        noHeuristic = False
+    def runAccuracyTest(self, sentimentPhrases, sentiment, message, correctScore):
+        noSentiment = False
         noScore = False
-        if not heuristic in heuristicPhrases:
-            noHeuristic = True
+        if not sentiment in sentimentPhrases:
+            noSentiment = True
         elif np.isnan(correctScore):
             noScore = True
-        predict = self.predict(heuristicPhrases, heuristic, message, correctScore)
-        result = [predict[0], predict[1], noHeuristic, noScore]
+        predict = self.predict(sentimentPhrases, sentiment, message, correctScore)
+        result = [predict[0], predict[1], noSentiment, noScore]
         #print(result)
-        self.updateHeuristicPhrases(heuristic, heuristicPhrases, message)
+        self.updateSentimentPhrases(sentiment, sentimentPhrases, message)
         return result
 
-    def updateHeuristicPhrases(self, heuristic, heuristicPhrases, message):
-        if heuristic in heuristicPhrases:
+    def updateSentimentPhrases(self, sentiment, sentimentPhrases, message):
+        if sentiment in sentimentPhrases:
             finder = BigramCollocationFinder.from_words(message)
             phrases = finder.nbest(bigram_measures.pmi, 6)
             for p in phrases:
                 ph = str(p[0]) + ' ' + str(p[1])
-                if ph not in heuristicPhrases[heuristic]:
-                    heuristicPhrases[heuristic][ph] = 1
-                elif ph in heuristicPhrases[heuristic]:
-                    heuristicPhrases[heuristic][ph] += 1
-        elif heuristic not in heuristicPhrases:
-            self.addHeuristic(heuristic, heuristicPhrases, message)
+                if ph not in sentimentPhrases[sentiment]:
+                    sentimentPhrases[sentiment][ph] = 1
+                elif ph in sentimentPhrases[sentiment]:
+                    sentimentPhrases[sentiment][ph] += 1
+        elif sentiment not in sentimentPhrases:
+            self.addSentiment(sentiment, sentimentPhrases, message)
             
-    def addHeuristic(self, heuristic, heuristicPhrases, message):
-        if heuristic not in heuristicPhrases:
-            heuristicPhrases[heuristic] = {}
+    def addSentiment(self, sentiment, sentimentPhrases, message):
+        if sentiment not in sentimentPhrases:
+            sentimentPhrases[sentiment] = {}
             finder = BigramCollocationFinder.from_words(message)
             finder.apply_freq_filter(2)
             phrases = finder.nbest(bigram_measures.pmi, 6)
@@ -94,8 +93,8 @@ class PhraseAccuracyTesting:
                 ph = str(p[0]) + ' ' + str(p[1])
                 phraseList.append(ph)
             for ph in phraseList:
-                if ph not in heuristicPhrases[heuristic]:
-                    heuristicPhrases[heuristic][ph] = 1
-                elif ph in heuristicPhrases[heuristic]:
-                    heuristicPhrases[heuristic][ph] += 1
+                if ph not in sentimentPhrases[sentiment]:
+                    sentimentPhrases[sentiment][ph] = 1
+                elif ph in sentimentPhrases[sentiment]:
+                    sentimentPhrases[sentiment][ph] += 1
     
