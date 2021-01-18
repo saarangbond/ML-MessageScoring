@@ -9,13 +9,13 @@ This project utilizes the NLTK (Natural Language Tool Kit) library in python to 
      - Sort each unique identifier into its own structure
      - Sort the words and phrases into those structures
      - Remove unwanted words and punctuation from the structures
-  2. Pass the training structure to two separate model that assign separate scores based on a) word frequency and b) phrase frequency
+  2. Pass the training structure to two separate models that assign separate scores based on a) word frequency and b) phrase frequency
   3. Garner the overall score based on the two separate model's scores.
 - - -
 
 ### Running the Program
   This project was built and tested with Anaconda version 3.7 of Python.
-  To run this program from the command line, you MUST use a version of Python 3 Anaconda with Pandas installed.
+  To run this program from the command line, you MUST use a version of Python 3 (Anaconda) with Pandas installed.
 
   TO RUN: use "python general.py" to run the default program with the sample data.
 
